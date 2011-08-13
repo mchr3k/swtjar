@@ -1,0 +1,6 @@
+.metadata/
+bin/*
+reports/*
+build/*
+built/*
+libsrc*

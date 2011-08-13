@@ -1,0 +1,46 @@
+<project name="InTrace" basedir="." default="help">
+
+  <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+           classpath="./lib/jarjar-1.0.jar"/>
+
+
+  <target name="help">
+    <java classname="org.apache.tools.ant.Main">
+      <arg value="-projecthelp" />
+    </java>
+  </target>
+
+
+  <target name="clean" description="Comile classes">
+    <delete dir="./build" />
+    <delete dir="./reports" />
+  </target>
+
+
+  <target name="build" description="Comile classes">
+    <mkdir dir="./build" />
+    <mkdir dir="./build/classes" />
+
+    <javac destdir="./build/classes" debug="true" source="1.6" target="1.6">
+      <src path="./src"/>
+      <classpath>
+        <fileset dir="./lib" includes="*.jar" />
+      </classpath>
+    </javac>
+  </target>
+
+
+  <target name="jar" description="Create Jars" depends="build" >
+
+    <mkdir dir="./build/jars/" />
+
+    <!-- Emma Check -->
+    <jarjar jarfile="./build/jars/emmacheck.jar" compress="false">
+      <fileset dir="./build/classes"/>
+      <zipfileset src="./lib/emma.jar"/>
+      <zipfileset src="./lib/emma_ant.jar"/>
+    </jarjar>
+
+  </target>
+
+</project>
