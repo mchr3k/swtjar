@@ -1,8 +1,4 @@
-<project name="InTrace" basedir="." default="help">
-
-  <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
-           classpath="./lib/jarjar-1.0.jar"/>
-
+<project name="SwtJar" basedir="." default="help">
 
   <target name="help">
     <java classname="org.apache.tools.ant.Main">
@@ -10,12 +6,10 @@
     </java>
   </target>
 
-
   <target name="clean" description="Comile classes">
     <delete dir="./build" />
     <delete dir="./reports" />
   </target>
-
 
   <target name="build" description="Comile classes">
     <mkdir dir="./build" />
@@ -29,17 +23,15 @@
     </javac>
   </target>
 
-
   <target name="jar" description="Create Jars" depends="build" >
 
     <mkdir dir="./build/jars/" />
 
-    <!-- Emma Check -->
-    <jarjar jarfile="./build/jars/emmacheck.jar" compress="false">
+    <!-- SwtJar ant task -->
+    <jar jarfile="./build/jars/swtjar.jar" compress="false">
       <fileset dir="./build/classes"/>
-      <zipfileset src="./lib/emma.jar"/>
-      <zipfileset src="./lib/emma_ant.jar"/>
-    </jarjar>
+      <zipfileset excludes="META-INF/*.MF" src="lib/jar-in-jar-loader.jar"/>
+    </jar>
 
   </target>
 

@@ -13,9 +13,9 @@ import org.eclipse.jdt.internal.jarinjarloader.RsrcURLStreamHandlerFactory;
 
 public class SWTLoader
 {
-  private static final String SWTJAR_MAIN_CLASS = "SwtJar-Target-Main-Class";
-  private static final String SWTJAR_JAR = "SwtJar-Target-Jar";
-  private static final String SWTJAR_VERSION = "SwtJar-Swt-Version";
+  public static final String SWTJAR_MAIN_CLASS = "SwtJar-TargetMainClass";
+  public static final String SWTJAR_JAR = "SwtJar-TargetJar";
+  public static final String SWTJAR_VERSION = "SwtJar-SwtVersion";
 
   private static String sTargetMainClass = null;
   private static String sTargetJar = null;
@@ -113,22 +113,22 @@ public class SWTLoader
       }
 
       Attributes mainAttributes = m.getMainAttributes();
-      Object mainClass = mainAttributes.get(SWTJAR_MAIN_CLASS);
+      String mainClass = mainAttributes.getValue(SWTJAR_MAIN_CLASS);
       if (mainClass != null)
       {
-        sTargetMainClass = mainClass.toString();
+        sTargetMainClass = mainClass;
       }
 
-      Object jar = mainAttributes.get(SWTJAR_JAR);
+      String jar = mainAttributes.getValue(SWTJAR_JAR);
       if (jar != null)
       {
-        sTargetJar = jar.toString();
+        sTargetJar = jar;
       }
 
-      Object swtVer = mainAttributes.get(SWTJAR_VERSION);
+      String swtVer = mainAttributes.getValue(SWTJAR_VERSION);
       if (swtVer != null)
       {
-        sSwtVersion = swtVer.toString();
+        sSwtVersion = swtVer;
       }
 
       if ((sTargetMainClass == null) ||
