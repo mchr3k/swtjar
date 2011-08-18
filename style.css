@@ -2,11 +2,11 @@
 
 #title
 {
-	height:100px;
-	border-color:#97CBFF;
+	border-color:#CCCCCC;
 	border-width:1px;
 	border-style:solid;
 	margin: 5px 15px;
+	padding: 10px;
 }
 
 /* General styles */
@@ -79,18 +79,15 @@ body
 
 h1
 {
-    border-bottom: 1px solid #CCCCCC;
     margin: 0px;
-    padding: 0px;
+    padding: 0px;    
 }
 
 h2
 {
-    border-top: 4px solid #CCCCCC;
-    font-size: 22px;
-    line-height: normal;
-    margin: 22px 0 0;
-    padding: 7px 0 0;
+    border-bottom: 1px solid #CCCCCC;
+    margin: 0px;
+    padding: 0px;    
 }
 
 pre
@@ -116,11 +113,11 @@ p
 .navwrapper
 {
 	margin-top:5px;
-	border-color:#97CBFF;
+	border-color:#CCCCCC;
 	border-width:1px;
 	border-style:solid;
 	width: 154px;
-	background:#E1F0FF;
+	background:#EFEFEF;
 	padding:8px;	
 }
 	
