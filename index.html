@@ -85,8 +85,23 @@ at runtime allowing you to distribute a single jar which works across (Windows/L
 <h3>How It Works</h3>
 
 <p>The key problem which the SWT library presents is that it requires a platform specific classpath. SWTJar implements
-this by including a standard loader class which performs platform detection and then constructs an appropriate
-Classloader.
+this by including a standard loader class which performs platform detection and then constructs a Classloader which will load
+the correct SWT classes.
 
 <p>The reason why all your application classes and libraries need to be packaged into a wrapper jar before being 
 packaged by swtjar is Classloader delegation.
+
+<h3>Limitations</h3>
+
+<p>On Windows, jar files can normally be launched by double clicking them but this may not work if another
+application has been installed which has registered itself as the default handler for jar files. In this
+case the user will have to launch the jar explicitly using the following command.
+
+<pre>java -jar ui.jar</pre>
+
+<p>On Linux, jar files can normally be launched by double clicking them.
+
+<p>On OSX an SWT UI requires an extra command line argument to launch correctly. The user must start
+the UI from the command line using the following command.
+
+<pre>java -XstartOnFirstThread -jar ui.jar</pre>
