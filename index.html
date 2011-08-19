@@ -18,7 +18,7 @@ distribute 6 different packages which isn't really in the spirit of Java's write
 <p>Assuming you use ant to build your code, here is what the traditional solution looks like (showing only
 32/64 bit Windows build commands).
 
-<pre>
+<pre class="prettyprint">
 &lt;!-- 32 bit windows UI --&gt;
 &lt;jar jarfile="./build/jars/ui-win32.jar"&gt;
   &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
@@ -44,14 +44,14 @@ at runtime allowing you to distribute a single jar which works across (Windows/L
 
 <p>First you need to declare the new ant task at the top of your build.xml file.
 
-<pre>
+<pre class="prettyprint">
 &lt;taskdef name="swtjar" classname="org.swtjar.ant.SWTJarTask"
                        classpath="./lib/swtjar.jar"/&gt;
 </pre>
 
 <p>Here is an example of using swtjar.
 
-<pre>
+<pre class="prettyprint">
 &lt;!-- Package UI code including all libraries apart from SWT --&gt;
 &lt;jar jarfile="./build/tmp/ui-wrapper.jar"&gt;
   &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
