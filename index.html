@@ -4,4 +4,89 @@ title: SWTJar - Home
 ---
 <h2>Home</h2>
 
-<p>SWT Jar is a tool for easily packaging SWT Java applications into a single cross platform Jar.
+<p>SWTJar is a tool for easily packaging SWT Java applications into a single cross platform Jar.
+
+<p>Download <a href="https://github.com/downloads/mchr3k/swtjar/swtjar.jar">swtjar.jar</a>
+
+<h3>The Problem</h3>
+
+<p>SWT is a Java widget toolkit that provides access to native UI elements. This presents a problem
+when it comes to packaging an application as you need to include a different SWT jar for each platform
+(Windows/Linux/OSX)/(32/64bit). To support all of these standard platforms you have to build and
+distribute 6 different packages which isn't really in the spirit of Java's write once, run anywhere.
+
+<p>Assuming you use ant to build your code, here is what the traditional solution looks like (showing only
+32/64 bit Windows build commands).
+
+<pre>
+<!-- 32 bit windows UI -->
+<jar jarfile="./build/jars/ui-win32.jar">
+  <fileset dir="./build/classes" includes="**/*.class" />
+  <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
+  <fileset dir="./lib" includes="swt-win32-3.6.2.jar" />
+</jar>
+<!-- 64 bit windows UI -->
+<jar jarfile="./build/jars/ui-win32.jar">
+  <fileset dir="./build/classes" includes="**/*.class" />
+  <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
+  <fileset dir="./lib" includes="swt-win64-3.6.2.jar" />
+</jar>
+</pre>
+
+<p>This is really verbose and leaves you with more files to manage and distribute - Surely there is a better way?
+
+<h3>The Solution</h3>
+
+<p>SWTJar is an ant task which allows you to build a single jar which loads the correct SWT classes
+at runtime allowing you to distribute a single jar which works across (Windows/Linux/OSX)/(32/64bit).
+
+<p>Lets take a look at what this looks like in your ant built script.
+
+<p>First you need to declare the new ant task at the top of your build.xml file.
+
+<pre>
+<taskdef name="swtjar" classname="org.swtjar.ant.SWTJarTask"
+                       classpath="./lib/swtjar.jar"/>
+</pre>
+
+<p>Here is an example of using swtjar.
+
+<pre>
+<!-- Package UI code including all libraries apart from SWT -->
+<jar jarfile="./build/tmp/ui-wrapper.jar">
+  <fileset dir="./build/classes" includes="**/*.class" />
+  <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
+</jar>
+
+<!-- Package cross platform SWT Jar -->
+<swtjar jarfile="./build/jars/ui.jar"
+		targetmainclass="org.project.gui.ProjectGUI"
+		targetjar="ui-wrapper.jar"
+		swtversion="3.6.2">
+  <fileset dir="./build/tmp" includes="ui-wrapper.jar" />
+  <fileset dir="./lib" includes="swt-*-3.6.2.jar" />
+</swtjar>
+</pre>
+
+<p>There are a few things to note about the swtjar task.
+<ul>
+<li>targetmainclass - this should be the class with the public static void main(String[] args) entry point
+<li>targetjar - this must be the path to the jar built in the previous step
+<li>swtversion - all the SWT jars you are using must have filenames of the format swt-&lt;platform&gt;&lt;bitness&gt;-&lt;version&gt;.jar
+<ul>
+<li>&lt;platform&gt; - Must be one of win/linux/osx.
+<li>&lt;bitness&gt; - Must be one of 32/64.
+<li>&lt;version&gt; - Any string - must match the swtversion param used in the swtjar command.
+</ul>
+<li>fileset - The swtjar task must only be asked to package the previously built jar (which includes all of your required libraries) and
+    the SWT jars. If you include any other jars in the swtjar task then your application may not work correctly.
+</ul>
+
+<h3>How It Works</h3>
+
+<p>The key problem which the SWT library presents is that it requires a platform specific classpath. SWTJar implements
+this by including a standard loader class which performs platform detection and then constructs an appropriate
+Classloader.
+
+<p>The reason why all your application classes and libraries need to be packaged into a wrapper jar before being 
+packaged by swtjar is Classloader delegation.
