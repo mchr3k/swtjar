@@ -19,18 +19,18 @@ distribute 6 different packages which isn't really in the spirit of Java's write
 32/64 bit Windows build commands).
 
 <pre>
-<!-- 32 bit windows UI -->
-<jar jarfile="./build/jars/ui-win32.jar">
-  <fileset dir="./build/classes" includes="**/*.class" />
-  <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
-  <fileset dir="./lib" includes="swt-win32-3.6.2.jar" />
-</jar>
-<!-- 64 bit windows UI -->
-<jar jarfile="./build/jars/ui-win32.jar">
-  <fileset dir="./build/classes" includes="**/*.class" />
-  <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
-  <fileset dir="./lib" includes="swt-win64-3.6.2.jar" />
-</jar>
+&lt;!-- 32 bit windows UI --&gt;
+&lt;jar jarfile="./build/jars/ui-win32.jar"&gt;
+  &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
+  &lt;zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/&gt;
+  &lt;fileset dir="./lib" includes="swt-win32-3.6.2.jar" /&gt;
+&lt;/jar&gt;
+&lt;!-- 64 bit windows UI --&gt;
+&lt;jar jarfile="./build/jars/ui-win32.jar"&gt;
+  &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
+  &lt;zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/&gt;
+  &lt;fileset dir="./lib" includes="swt-win64-3.6.2.jar" /&gt;
+&lt;/jar&gt;
 </pre>
 
 <p>This is really verbose and leaves you with more files to manage and distribute - Surely there is a better way?
@@ -45,27 +45,27 @@ at runtime allowing you to distribute a single jar which works across (Windows/L
 <p>First you need to declare the new ant task at the top of your build.xml file.
 
 <pre>
-<taskdef name="swtjar" classname="org.swtjar.ant.SWTJarTask"
-                       classpath="./lib/swtjar.jar"/>
+&lt;taskdef name="swtjar" classname="org.swtjar.ant.SWTJarTask"
+                       classpath="./lib/swtjar.jar"/&gt;
 </pre>
 
 <p>Here is an example of using swtjar.
 
 <pre>
-<!-- Package UI code including all libraries apart from SWT -->
-<jar jarfile="./build/tmp/ui-wrapper.jar">
-  <fileset dir="./build/classes" includes="**/*.class" />
-  <zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/>
-</jar>
+&lt;!-- Package UI code including all libraries apart from SWT --&gt;
+&lt;jar jarfile="./build/tmp/ui-wrapper.jar"&gt;
+  &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
+  &lt;zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/&gt;
+&lt;/jar&gt;
 
-<!-- Package cross platform SWT Jar -->
-<swtjar jarfile="./build/jars/ui.jar"
+&lt;!-- Package cross platform SWT Jar --&gt;
+&lt;swtjar jarfile="./build/jars/ui.jar"
 		targetmainclass="org.project.gui.ProjectGUI"
 		targetjar="ui-wrapper.jar"
-		swtversion="3.6.2">
-  <fileset dir="./build/tmp" includes="ui-wrapper.jar" />
-  <fileset dir="./lib" includes="swt-*-3.6.2.jar" />
-</swtjar>
+		swtversion="3.6.2"&gt;
+  &lt;fileset dir="./build/tmp" includes="ui-wrapper.jar" /&gt;
+  &lt;fileset dir="./lib" includes="swt-*-3.6.2.jar" /&gt;
+&lt;/swtjar&gt;
 </pre>
 
 <p>There are a few things to note about the swtjar task.
