@@ -67,25 +67,17 @@ public class SWTJarTask extends Jar
     String name = getClass().getName().replace('.', '/');
     name = getClass().getResource("/" + name + ".class").toString();
 
-    // remove junk
+    // clean up result
     int jarIndex = name.indexOf(".jar");
     if (jarIndex < 0)
     {
       throw new BuildException("This class must be run from within a JAR file");
     }
     name = name.substring(0, jarIndex + ".jar".length());
-    name = name.substring(name.lastIndexOf(':') - 1).replace('%', ' ');
-
-    // remove escape characters
-    String s = "";
-    for (int k = 0; k < name.length(); k++)
-    {
-      s += name.charAt(k);
-      if (name.charAt(k) == ' ')
-        k += 2;
-    }
-    // replace '/' with system separator char
-    return s.replace('/', File.separatorChar);
+    name = name.substring(name.lastIndexOf(':') + 1);
+    name = name.replace('%', ' ');
+    name = name.replace('/', File.separatorChar);
+    return name;
   }
 
 }
