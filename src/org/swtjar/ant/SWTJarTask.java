@@ -13,17 +13,11 @@ import org.swtjar.SWTLoader;
 public class SWTJarTask extends Jar
 {
   private String targetmainclass = null;
-  private String targetjar = null;
   private String swtversion = null;
 
   public void setTargetmainclass(String targetmainclass)
   {
     this.targetmainclass = targetmainclass;
-  }
-
-  public void setTargetjar(String targetjar)
-  {
-    this.targetjar = targetjar;
   }
 
   public void setSwtversion(String swtversion)
@@ -39,11 +33,6 @@ public class SWTJarTask extends Jar
       throw new BuildException("Must specify targetmainclass");
     }
 
-    if (targetjar == null)
-    {
-      throw new BuildException("Must specify targetjar");
-    }
-
     if (swtversion == null)
     {
       throw new BuildException("Must specify swtversion");
@@ -52,7 +41,6 @@ public class SWTJarTask extends Jar
     try
     {
       Manifest swtAttrs = new Manifest();
-      swtAttrs.getMainSection().addConfiguredAttribute(new Attribute(SWTLoader.SWTJAR_JAR, targetjar));
       swtAttrs.getMainSection().addConfiguredAttribute(new Attribute(SWTLoader.SWTJAR_MAIN_CLASS, targetmainclass));
       swtAttrs.getMainSection().addConfiguredAttribute(new Attribute(SWTLoader.SWTJAR_VERSION, swtversion));
       swtAttrs.getMainSection().addConfiguredAttribute(new Attribute("Main-Class", SWTLoader.class.getName()));

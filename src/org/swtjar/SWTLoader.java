@@ -3,7 +3,6 @@ package org.swtjar;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.jar.Attributes;
@@ -14,11 +13,9 @@ import org.eclipse.jdt.internal.jarinjarloader.RsrcURLStreamHandlerFactory;
 public class SWTLoader
 {
   public static final String SWTJAR_MAIN_CLASS = "SwtJar-TargetMainClass";
-  public static final String SWTJAR_JAR = "SwtJar-TargetJar";
   public static final String SWTJAR_VERSION = "SwtJar-SwtVersion";
 
   private static String sTargetMainClass = null;
-  private static String sTargetJar = null;
   private static String sSwtVersion = null;
 
   public static void main(String[] args) throws Throwable
@@ -119,12 +116,6 @@ public class SWTLoader
         sTargetMainClass = mainClass;
       }
 
-      String jar = mainAttributes.getValue(SWTJAR_JAR);
-      if (jar != null)
-      {
-        sTargetJar = jar;
-      }
-
       String swtVer = mainAttributes.getValue(SWTJAR_VERSION);
       if (swtVer != null)
       {
@@ -132,7 +123,6 @@ public class SWTLoader
       }
 
       if ((sTargetMainClass == null) ||
-          (sTargetJar == null) ||
           (sSwtVersion == null))
       {
         throw new SWTLoadFailed("Failed to load swtjar config from manifest");
@@ -179,31 +169,23 @@ public class SWTLoader
 
   private static ClassLoader getSWTClassloader() throws SWTLoadFailed
   {
-    ClassLoader parent = SWTLoader.class.getClassLoader();
-    URL.setURLStreamHandlerFactory(new RsrcURLStreamHandlerFactory(parent));
     String swtFileName = getSwtJarName();
     try
     {
-      URL intraceFileUrl = new URL("rsrc:" + sTargetJar);
+      URLClassLoader cl = (URLClassLoader)SWTLoader.class.getClassLoader();
+      URL.setURLStreamHandlerFactory(new RsrcURLStreamHandlerFactory(cl));
+      Method addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+      addUrlMethod.setAccessible(true);
+
       URL swtFileUrl = new URL("rsrc:" + swtFileName);
       System.err.println("Using SWT Jar: " + swtFileName);
-      ClassLoader cl = new URLClassLoader(new URL[] {intraceFileUrl, swtFileUrl}, parent);
-
-      try
-      {
-        // Check we can now load the SWT class
-        Class.forName("org.eclipse.swt.widgets.Layout", true, cl);
-      }
-      catch (ClassNotFoundException exx)
-      {
-        throw new SWTLoadFailed("Failed to load SWT class from jar: " + swtFileName);
-      }
+      addUrlMethod.invoke(cl, swtFileUrl);
 
       return cl;
     }
-    catch (MalformedURLException exx)
+    catch (Exception exx)
     {
-      throw new SWTLoadFailed("MalformedURLException: " + exx.getMessage());
+      throw new SWTLoadFailed(exx.getClass().getSimpleName() + ": " + exx.getMessage());
     }
   }
 
