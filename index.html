@@ -52,18 +52,17 @@ at runtime allowing you to distribute a single jar which works across (Windows/L
 <p>Here is an example of using swtjar.
 
 <pre class="prettyprint lang-xml">
-&lt;!-- Package UI code including all libraries apart from SWT --&gt;
-&lt;jar jarfile="./build/tmp/ui-wrapper.jar"&gt;
-  &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
-  &lt;zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/&gt;
-&lt;/jar&gt;
-
 &lt;!-- Package cross platform SWT Jar --&gt;
 &lt;swtjar jarfile="./build/jars/ui.jar"
 		targetmainclass="org.project.gui.ProjectGUI"
-		targetjar="ui-wrapper.jar"
 		swtversion="3.6.2"&gt;
-  &lt;fileset dir="./build/tmp" includes="ui-wrapper.jar" /&gt;
+  &lt;!-- Application Classes --&gt;
+  &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
+  
+  &lt;!-- Library Classes --&gt;
+  &lt;zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/&gt;
+  
+  &lt;!-- SWT Jars --&gt;
   &lt;fileset dir="./lib" includes="swt-*-3.6.2.jar" /&gt;
 &lt;/swtjar&gt;
 </pre>
@@ -71,15 +70,12 @@ at runtime allowing you to distribute a single jar which works across (Windows/L
 <p>There are a few things to note about the swtjar task.
 <ul>
 <li>targetmainclass - this should be the class with the public static void main(String[] args) entry point
-<li>targetjar - this must be the path to the jar built in the previous step
 <li>swtversion - all the SWT jars you are using must have filenames of the format swt-&lt;platform&gt;&lt;bitness&gt;-&lt;version&gt;.jar
 <ul>
 <li>&lt;platform&gt; - Must be one of win/linux/osx.
 <li>&lt;bitness&gt; - Must be one of 32/64.
 <li>&lt;version&gt; - Any string - must match the swtversion param used in the swtjar command.
 </ul>
-<li>fileset - The swtjar task must only be asked to package the previously built jar (which includes all of your required libraries) and
-    the SWT jars. If you include any other jars in the swtjar task then your application may not work correctly.
 </ul>
 
 <h3>How It Works</h3>
@@ -87,9 +83,6 @@ at runtime allowing you to distribute a single jar which works across (Windows/L
 <p>The key problem which the SWT library presents is that it requires a platform specific classpath. SWTJar implements
 this by including a standard loader class which performs platform detection and then constructs a Classloader which will load
 the correct SWT classes.
-
-<p>The reason why all your application classes and libraries need to be packaged into a wrapper jar before being 
-packaged by swtjar is Classloader delegation.
 
 <h3>Limitations</h3>
 
