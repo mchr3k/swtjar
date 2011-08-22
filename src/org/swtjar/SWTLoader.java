@@ -8,6 +8,9 @@ import java.net.URLClassLoader;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
 import org.eclipse.jdt.internal.jarinjarloader.RsrcURLStreamHandlerFactory;
 
 public class SWTLoader
@@ -78,6 +81,8 @@ public class SWTLoader
     {
       String reason = ex.getMessage();
       System.err.println("Launch failed: " + reason);
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      JOptionPane.showMessageDialog(null, reason, "Launching UI Failed", JOptionPane.ERROR_MESSAGE);
     }
   }
 
