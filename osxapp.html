@@ -63,21 +63,21 @@ the -XstartOnFirstThread argument can be specified.
 <p>To use this task, you need to add the following at the top of your build.xml file.
 
 <pre class="prettyprint lang-xml">
-<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" 
-         classpath="./lib/jarbundler-2.2.0.jar"/>
+&lt;taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" 
+         classpath="./lib/jarbundler-2.2.0.jar"/&gt;
 </pre>
 
 <p>The task can then be invoked as follows.
 
 <pre class="prettyprint lang-xml">
-<mkdir dir="./build/jar/UIApp/" />
-<jarbundler dir="./build/jar/UIApp/"
+&lt;mkdir dir="./build/jar/UIApp/" /&gt;
+&lt;jarbundler dir="./build/jar/UIApp/"
             name="UI"
             mainclass="org.swtjar.SWTLoader" 
             jar="./build/jars/ui-osx.jar" 
             startOnMainThread="true" 
             icon="./icons/ui128.icns" 
-            stubfile="./lib/JavaApplicationStub" />
+            stubfile="./lib/JavaApplicationStub" /&gt;
 </pre>
 
 <p>There are several things to note about these parameters.
@@ -110,14 +110,14 @@ executable after being untarred.
 <p>Here is the ant build.xml code.
 
 <pre class="prettyprint lang-xml">
-<delete file="./build/jar/UIApp/UI.app/Contents/MacOS/JavaApplicationStub" />
-<mkdir dir="./build/jar/UILauncher/UI.app/Contents/MacOS/" />
-<copy file="./lib/JavaApplicationStub" 
-      todir="./build/jar/UILauncher/UI.app/Contents/MacOS/" />
-<tar destfile="./build/jars/UI.app.tar">
-  <tarfileset dir="./build/jars/UIAppLauncher/" filemode="777" />
-  <tarfileset dir="./build/jars/UIApp/" />
-</tar>
+&lt;delete file="./build/jar/UIApp/UI.app/Contents/MacOS/JavaApplicationStub" /&gt;
+&lt;mkdir dir="./build/jar/UILauncher/UI.app/Contents/MacOS/" /&gt;
+&lt;copy file="./lib/JavaApplicationStub" 
+      todir="./build/jar/UILauncher/UI.app/Contents/MacOS/" /&gt;
+&lt;tar destfile="./build/jars/UI.app.tar"&gt;
+  &lt;tarfileset dir="./build/jars/UIAppLauncher/" filemode="777" /&gt;
+  &lt;tarfileset dir="./build/jars/UIApp/" /&gt;
+&lt;/tar&gt;
 </pre>
 
 <p>This is doing the following.
