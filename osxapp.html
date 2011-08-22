@@ -1,0 +1,131 @@
+---
+layout: default
+title: Packaging SWT for OSX
+---
+<h2>Packaging SWT for OSX</h2>
+
+<p>To run SWT on OSX you must start the JVM with the command line argument -XstartOnFirstThread. However,
+there is no way to specify this argument from a JAR file. Instead, you must package your JAR
+as a proper OSX application. Some information about how to do this is available on other sites.
+
+<ul>
+<li><a href="http://java.sun.com/developer/technicalArticles/JavaLP/JavaToMac3/">Bringing your Java Application to Mac OS X</a> (Oracle)
+<li><a href="http://www.eclipse.org/swt/macosx/">Deploying SWT Applications on Mac OS X</a> (Eclipse SWT Project)
+</ul>
+
+<p>However, neither of these articles contained a complete working ant build file to automate the process
+and allow OSX packaging to be run on other operating systems. This article is intended to fill that gap.
+
+<h3>Step 1 - Build your Jars</h3>
+
+<p>We are going to do something special for OSX so the first step is to build separate jars for Windows/Linux and OSX.
+
+<pre class="prettyprint lang-xml">
+&lt;!-- Package cross platform SWT Jar (Windows/Linux) --&gt;
+&lt;swtjar jarfile="./build/jars/ui.jar"
+		targetmainclass="org.project.gui.ProjectGUI"
+		swtversion="3.6.2"&gt;
+  &lt;!-- Application Classes --&gt;
+  &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
+  
+  &lt;!-- Library Classes --&gt;
+  &lt;zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/&gt;
+  
+  &lt;!-- SWT Jars (Windows/Linux) --&gt;
+  &lt;fileset dir="./lib" includes="swt-lin*-3.6.2.jar" /&gt;
+  &lt;fileset dir="./lib" includes="swt-win*-3.6.2.jar" /&gt;
+&lt;/swtjar&gt;
+
+&lt;!-- Package OSX SWT Jar --&gt;
+&lt;swtjar jarfile="./build/jars/ui-osx.jar"
+		targetmainclass="org.project.gui.ProjectGUI"
+		swtversion="3.6.2"&gt;
+  &lt;!-- Application Classes --&gt;
+  &lt;fileset dir="./build/classes" includes="**/*.class" /&gt;
+  
+  &lt;!-- Library Classes --&gt;
+  &lt;zipfileset excludes="META-INF/*.MF" src="lib/miglayout-3.7.3.1-swt.jar"/&gt;
+  
+  &lt;!-- SWT Jars (OSX) --&gt;
+  &lt;fileset dir="./lib" includes="swt-osx*-3.6.2.jar" /&gt;
+&lt;/swtjar&gt;
+</pre>
+
+<h3>Step 2 - Build .app Folder</h3>
+
+<p>OSX applications are packaged into folders with names ending in ".app". The contents of
+the folder have a very particular structure and include an Info.plist file which is where
+the -XstartOnFirstThread argument can be specified.
+
+<p>Thankfully, there is a free ant task which automated the process of building the .app folder: 
+<a href="http://informagen.com/JarBundler/">JarBundler</a>
+
+<p>To use this task, you need to add the following at the top of your build.xml file.
+
+<pre class="prettyprint lang-xml">
+<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" 
+         classpath="./lib/jarbundler-2.2.0.jar"/>
+</pre>
+
+<p>The task can then be invoked as follows.
+
+<pre class="prettyprint lang-xml">
+<jarbundler dir="./build/jar/UIApp/"
+            name="UI"
+            mainclass="org.swtjar.SWTLoader" 
+            jar="./build/jars/ui-osx.jar" 
+            startOnMainThread="true" 
+            icon="./icons/ui128.icns" 
+            stubfile="./lib/JavaApplicationStub" />
+</pre>
+
+<p>There are several things to note about these parameters.
+
+<ul>
+<li>dir - This is the directory under which the .app folder will be constructed. In this case you will end up
+    with a folder /build/jar/UIApp/UI.app/.
+<li>name - This is the name of the .app folder which will be created.
+<li>mainclass - This is the main entry point for the cross platform SWT Loader. This is still needed to
+    select the correct 32/64 bit OSX SWT Jar.
+<li>startOnMainThread - This ensured the extra JVM argument is set to allow SWT to be loaded correctly.
+<li>icon - This is an optional param. The icon must be in the icns format but there are multiple sites which
+    will convert other formats such as PNG to an icns file. I have used this site: <a href="http://iconverticons.com/">http://iconverticons.com/</a>
+<li>stubfile - This is the wrapper executable which launches your application. The JarBundler site has the following to say:<br>
+"When the JarBundler ANT task is used under Windows or Linux, a copy of the JavaApplicationStub must be supplied by the developer. 
+This cannot be built from source but must be obtained from a Mac OS X system."<br>
+If you don't have access to an OSX system, I have a copy checked in from an OSX 10.6.6 system <a href="https://github.com/mchr3k/swtjar/raw/master/lib/JavaApplicationStub">here</a>.
+</ul>
+
+<p>You now have a .app folder which could be used to correctly launch your SWT UI on OSX. However, it
+isn't very practical to distribute a folder so there is one more step to package this up.
+
+<h3>Step 3 - Package .app Folder</h3>
+
+<p>The correct way to do this would be to package the .app folder as an OSX "Disk Image". However, I could not find a way of
+doing this packaging on any platform apart from OSX. Therefore, I chose to simply package the folder in a .tar file. Using
+tar instead of zip is a deliberate choice as tar files allow permissions to be stored to ensure the .app folder is
+executable after being untarred.
+
+<p>Here is the ant build.xml code.
+
+<pre class="prettyprint lang-xml">
+<delete file="./build/jar/UIApp/UI.app/Contents/MacOS/JavaApplicationStub" />
+<mkdir dir="./build/jar/UILauncher/UI.app/Contents/MacOS/" />
+<copy file="./lib/JavaApplicationStub" 
+      todir="./build/jar/UILauncher/UI.app/Contents/MacOS/" />
+<tar destfile="./build/jars/UI.app.tar">
+  <tarfileset dir="./build/jars/UIAppLauncher/" filemode="777" />
+  <tarfileset dir="./build/jars/UIApp/" />
+</tar>
+</pre>
+
+<p>This is doing the following.
+
+<ul>
+<li>Delete the JavaApplicationStub from the .app folder build by JarBundler.
+<li>Create a new directory with the same structure as the .app folder.
+<li>Copy the JavaApplicationStub into this new directory.
+<li>Build a jar file and mark the JavaApplicationStub with permissions 777 to ensure it is executable when untarred.
+</ul>
+
+<p>And thats it - you now have a single file UI.app.tar which can be distributed to OSX users.
