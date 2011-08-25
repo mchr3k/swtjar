@@ -100,3 +100,13 @@ the UI from the command line using the following command.
 <pre>java -XstartOnFirstThread -jar ui.jar</pre>
 
 <p>To work around this issue you can perform some further OSX specific packaging as described on this page: <a href="./osxapp.html">Packaging SWT for OSX</a>
+
+<h3>Credits</h3>
+
+<p>Alexey Romanov came up with the approach used by this tool. The details of his approach are described
+in his 
+<a href="http://stackoverflow.com/questions/2706222/create-cross-platform-java-swt-application/3204032#3204032">StackOverFlow answer</a>.
+
+<p>Ferenc Hechler created the Jar in Jar Classloader which is packaged in this tool. See 
+<a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=219530">this Eclipse bug</a> for the original details about
+this addition.
