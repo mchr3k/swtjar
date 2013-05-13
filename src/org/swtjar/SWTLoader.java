@@ -42,7 +42,7 @@ public class SWTLoader
       {
         try
         {
-          System.err.println("Launching UI ...");
+          //System.err.println("Launching UI ...");
           Class<?> c = Class.forName(sTargetMainClass, true, cl);
           Method main = c.getMethod("main", new Class[]{args.getClass()});
           main.invoke((Object)null, new Object[]{args});
@@ -193,7 +193,7 @@ public class SWTLoader
       addUrlMethod.setAccessible(true);
 
       URL swtFileUrl = new URL("rsrc:" + swtFileName);
-      System.err.println("Using SWT Jar: " + swtFileName);
+      //System.err.println("Using SWT Jar: " + swtFileName);
       addUrlMethod.invoke(cl, swtFileUrl);
 
       return cl;
