@@ -63,7 +63,6 @@ public class SWTJarTask extends Jar
 
     ZipFileSet zset = new ZipFileSet();
     String jarFile = getJarFilePath();
-    System.out.println(jarFile);
     zset.setSrc(new File(jarFile));
     zset.setIncludes("**/jarinjarloader/**/*.class,**/SWTLoader*.class");
     addZipfileset(zset);
@@ -85,6 +84,7 @@ public class SWTJarTask extends Jar
     }
     name = name.substring(0, jarIndex + ".jar".length());
     name = name.substring(name.lastIndexOf(':') + 1);
+    name = name.replace("%20", " ");
     name = name.replace('%', ' ');
     name = name.replace('/', File.separatorChar);
     return name;
