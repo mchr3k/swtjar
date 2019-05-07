@@ -187,16 +187,13 @@ public class SWTLoader
     String swtFileName = getSwtJarName();
     try
     {
-      URLClassLoader cl = (URLClassLoader)SWTLoader.class.getClassLoader();
-      URL.setURLStreamHandlerFactory(new RsrcURLStreamHandlerFactory(cl));
-      Method addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-      addUrlMethod.setAccessible(true);
-
-      URL swtFileUrl = new URL("rsrc:" + swtFileName);
-      //System.err.println("Using SWT Jar: " + swtFileName);
-      addUrlMethod.invoke(cl, swtFileUrl);
-
-      return cl;
+      URL.setURLStreamHandlerFactory(new RsrcURLStreamHandlerFactory(ClassLoader.getSystemClassLoader()));
+      URL[] urls = new URL[]{
+              new URL("rsrc:" + swtFileName), // for the SWT jars
+              new URL("rsrc:./")              // for the app classes
+      };
+      URLClassLoader ucl = new URLClassLoader(urls, ClassLoader.getPlatformClassLoader());
+      return ucl;
     }
     catch (Exception exx)
     {

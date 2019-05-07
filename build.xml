@@ -15,7 +15,7 @@
     <mkdir dir="./build" />
     <mkdir dir="./build/classes" />
 
-    <javac destdir="./build/classes" debug="true" source="1.6" target="1.6">
+    <javac destdir="./build/classes" debug="true" includeantruntime="false" source="9" target="9">
       <src path="./src"/>
       <classpath>
         <fileset dir="./lib" includes="*.jar" />
@@ -30,7 +30,7 @@
     <!-- SwtJar ant task -->
     <jar jarfile="./build/jars/swtjar.jar" compress="false">
       <fileset dir="./build/classes"/>
-      <zipfileset excludes="META-INF/*.MF" src="lib/jar-in-jar-loader.jar"/>
+      <zipfileset excludes="META-INF/*.MF" src="lib/jar-in-jar-loader.zip"/>
     </jar>
 
   </target>
